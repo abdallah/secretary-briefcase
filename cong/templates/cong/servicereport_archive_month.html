@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ report.month|date:"F" }}</h2>
+<table class="table tablesorter table-bordered table-condensed" id="sortable">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Hours</th>
+        <th>Magazines</th>
+        <th>Visits</th>
+        <th>Studies</th>
+        <th>Books</th>
+        <th>Booklets/Brochures</th>
+        <th>Group</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for report in object_list %}
+    <tr>
+        <td>{{ report.publisher }}</td>
+        <td>{{ report.hours }}</td>
+        <td>{{ report.magazines|default_if_none:"" }}</td>
+        <td>{{ report.visits|default_if_none:"" }}</td>
+        <td>{{ report.studies|default_if_none:"" }}</td>
+        <td>{{ report.books|default_if_none:"" }}</td>
+        <td>{{ report.booklets_brochures|default_if_none:"" }}</td>
+        <td>{{ report.publisher.group }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<br />
+<p>
+    {% if previous_month %}
+        Previous Month: {{ previous_month|date:"F Y" }}
+    {% endif %}
+    {% if next_month %}
+        Next Month: {{ next_month|date:"F Y" }}
+    {% endif %}
+</p>
+{% endblock %}

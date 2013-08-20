@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Report {{ report_month|date:"F" }}</h1>
+<h2>Active Publishers: {{ active_publishers }}</h2>
+<h2>Auxiliary Pioneers: </h2>
+<ul>
+{% for ap in auxiliary_pioneers %}
+<li>{{ ap.get_name }}</li>
+{% endfor %}
+</ul>
+{# publishers #}
+ 
+<table class="table table-hover">
+    <tr>
+        <th>Group</th>
+        <th>Count</th>
+        <th>Hours</th>
+        <th>Magazines</th>
+        <th>Visits</th>
+        <th>Studies</th>
+        <th>Books</th>
+        <th>Booklets/Brochures</th>
+    </tr>
+    <tr>
+        <td>Publishers</td>
+        <td>{{ pub_report.count }}</td>
+        <td>{{ pub_report.hours }}</td>
+        <td>{{ pub_report.magazines }}</td>
+        <td>{{ pub_report.visits }}</td>
+        <td>{{ pub_report.studies }}</td>
+        <td>{{ pub_report.books }}</td>
+        <td>{{ pub_report.booklets_brochures }}</td>
+    </tr>
+    <tr>
+        <td>Auxiliary Pioneers</td>
+        <td>{{ aux_report.count }}</td>
+        <td>{{ aux_report.hours }}</td>
+        <td>{{ aux_report.magazines }}</td>
+        <td>{{ aux_report.visits }}</td>
+        <td>{{ aux_report.studies }}</td>
+        <td>{{ aux_report.books }}</td>
+        <td>{{ aux_report.booklets_brochures }}</td>
+    </tr>
+    <tr>
+        <td>Regular Pioneers</td>
+        <td>{{ reg_report.count }}</td>
+        <td>{{ reg_report.hours }}</td>
+        <td>{{ reg_report.magazines }}</td>
+        <td>{{ reg_report.visits }}</td>
+        <td>{{ reg_report.studies }}</td>
+        <td>{{ reg_report.books }}</td>
+        <td>{{ reg_report.booklets_brochures }}</td>
+    </tr>
+</table>
+
+    
+<h2>Did not report yet:</h2>
+<ul>
+{% for pub in dnr %}
+<li><a href='{% url "card" pub.pk %}'>{{ pub.get_name }}</a> in {{ pub.group }} group</li> 
+{% endfor %}
+</ul>
+{% endblock %}

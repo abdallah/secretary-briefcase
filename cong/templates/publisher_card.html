@@ -1,0 +1,56 @@
+<a href="/">Home</a>
+
+<h1><a href='/admin/cong/publisher/{{ publisher.pk }}'>{{ publisher }}</a></h1>
+<table>
+    <tr>
+        <th>Name: </th><td>{{ publisher.first_name }} {{ publisher.last_name }}</td>
+    </tr>
+    <tr>
+        <th>Address: </th><td>{{ publisher.address }}</td>
+    </tr>
+    <tr>
+        <th>Telephone: </th><td>{{ publisher.telephone }}</td>
+    </tr>
+    <tr>
+        <th>Date of birth: </th><td>{{ publisher.date_of_birth }}</td>
+    </tr>
+   
+</table>
+
+
+<h3>Date immersed: </h3>{{ publisher.date_immersed }} 
+<h3>Annointed: </h3>{{ publisher.is_annointed }} 
+<h3>Elder: </h3>{{ publisher.is_elder }} 
+<h3>Min. Svt: </h3>{{ publisher.is_ministerial_servant }} 
+<h3>Regular Pioneer: </h3>{{ publisher.is_regualr_pioneer }} 
+<table>
+    <tr>
+        <th>Month</th>
+        <th>Hours</th>
+        <th>Magazines</th>
+        <th>Visits</th>
+        <th>Studies</th>
+        <th>Books</th>
+        <th>Booklets/Brochures</th>
+        <th>Auxiliary</th>
+        <th>Remarks</th> 
+    </tr>
+    {% regroup publisher.servicereport_set.all by month as reports %}
+    {% for sr in publisher.servicereport_set.all %}
+    <tr>
+        <td>{{ sr.month|date:"F"|capfirst }}</td>
+        <td>{{ sr.hours }}</td>
+        <td>{{ sr.magazines }}</td>
+        <td>{{ sr.visits }}</td>
+        <td>{{ sr.studies }}</td>
+        <td>{{ sr.books }}</td>
+        <td>{{ sr.booklets_brochures }}</td>
+        <td>{{ sr.auxiliary_pioneer }}</td>
+        <td>{{ sr.remarks }}</td> 
+    </tr>
+    {% endfor %}
+</table>
+
+<pre>
+{# debug #}
+</pre>
