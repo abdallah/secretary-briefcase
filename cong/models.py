@@ -91,8 +91,8 @@ class Publisher(models.Model):
         
     def get_name(self):
         return "%s %s" % (self.first_name, self.last_name)
-
         
+    
     
 class ServiceReport(models.Model):
     publisher = models.ForeignKey('Publisher')

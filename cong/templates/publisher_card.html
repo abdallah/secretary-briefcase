@@ -1,29 +1,22 @@
-<a href="/">Home</a>
-
-<h1><a href='/admin/cong/publisher/{{ publisher.pk }}'>{{ publisher }}</a></h1>
-<table>
-    <tr>
-        <th>Name: </th><td>{{ publisher.first_name }} {{ publisher.last_name }}</td>
-    </tr>
+<h2><a href="{% url 'admin:cong_publisher_change' publisher.pk%}">{{ publisher }}</a></h2>
+<table class="table table-condensed">
     <tr>
         <th>Address: </th><td>{{ publisher.address }}</td>
-    </tr>
-    <tr>
         <th>Telephone: </th><td>{{ publisher.telephone }}</td>
     </tr>
     <tr>
         <th>Date of birth: </th><td>{{ publisher.date_of_birth }}</td>
+        <th>Date immersed: </th><td>{{ publisher.date_immersed }}</td>
     </tr>
-   
+    <tr>
+        <th>Privileges: </th>
+        <td>{% if publisher.is_annointed %}Annointed{% endif %}</td>
+        <td>{% if publisher.is_elder %}Elder{% endif %}</td>
+        <td>{% if publisher.is_ministerial_servant %}Min. Svt{% endif %}</td>
+        <td>{% if publisher.is_regualr_pioneer %}Regular Pioneer{% endif %}</td>
+    </tr>
 </table>
-
-
-<h3>Date immersed: </h3>{{ publisher.date_immersed }} 
-<h3>Annointed: </h3>{{ publisher.is_annointed }} 
-<h3>Elder: </h3>{{ publisher.is_elder }} 
-<h3>Min. Svt: </h3>{{ publisher.is_ministerial_servant }} 
-<h3>Regular Pioneer: </h3>{{ publisher.is_regualr_pioneer }} 
-<table>
+<table class="table table-hover table-condensed">
     <tr>
         <th>Month</th>
         <th>Hours</th>
@@ -40,17 +33,13 @@
     <tr>
         <td>{{ sr.month|date:"F"|capfirst }}</td>
         <td>{{ sr.hours }}</td>
-        <td>{{ sr.magazines }}</td>
-        <td>{{ sr.visits }}</td>
-        <td>{{ sr.studies }}</td>
-        <td>{{ sr.books }}</td>
-        <td>{{ sr.booklets_brochures }}</td>
-        <td>{{ sr.auxiliary_pioneer }}</td>
-        <td>{{ sr.remarks }}</td> 
+        <td>{{ sr.magazines|default_if_none:"" }}</td>
+        <td>{{ sr.visits|default_if_none:"" }}</td>
+        <td>{{ sr.studies|default_if_none:"" }}</td>
+        <td>{{ sr.books|default_if_none:"" }}</td>
+        <td>{{ sr.booklets_brochures|default_if_none:"" }}</td>
+        <td>{% if sr.auxiliary_pioneer %}Yes{% endif %}</td>
+        <td>{{ sr.remarks|default_if_none:"" }}</td> 
     </tr>
     {% endfor %}
 </table>
-
-<pre>
-{# debug #}
-</pre>

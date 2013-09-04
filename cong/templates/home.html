@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
 <h1>Report {{ report_month|date:"F" }}</h1>
-<h2>Active Publishers: {{ active_publishers }}</h2>
-<h2>Auxiliary Pioneers: </h2>
+<h2>Active Publishers: <em>{{ active_publishers }}</em></h2>
+<h2>Auxiliary Pioneers: <em>{{ auxiliary_pioneers|length }}</em></h2>
 <ul>
 {% for ap in auxiliary_pioneers %}
-<li>{{ ap.get_name }}</li>
+<li><a href='{% url "card" ap.pk %}' data-toggle="modal" data-target="#myModal">{{ ap.get_name }}</a></li>
 {% endfor %}
 </ul>
 {# publishers #}
@@ -53,11 +53,14 @@
     </tr>
 </table>
 
-    
+{% if dnr %}
 <h2>Did not report yet:</h2>
-<ul>
+<dl>
 {% for pub in dnr %}
-<li><a href='{% url "card" pub.pk %}'>{{ pub.get_name }}</a> in {{ pub.group }} group</li> 
+    {% ifchanged pub.group %}<dt>{{ pub.group }}</dt>{% endifchanged %}
+    <dd><a href='{% url "card" pub.pk %}' data-toggle="modal" data-target="#myModal">{{ pub.get_name }}</a></dd>
 {% endfor %}
-</ul>
+</dl>
+{% endif %}
+
 {% endblock %}
