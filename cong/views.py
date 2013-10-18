@@ -1,6 +1,9 @@
 from django.shortcuts import get_object_or_404, render
+from django.template import RequestContext
+from django.template.loader import render_to_string
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
+from django.core import serializers
 from django.views import generic
 from django.db.models import Q
 import json
@@ -56,7 +59,6 @@ class PublisherList(ListView):
         )
 
     def convert_context_to_json(self, context):
-        from django.core import serializers
         return serializers.serialize('json', context['publisher_list'])
     
     def get_queryset(self):
@@ -72,7 +74,6 @@ class ReportsMonthView(MonthArchiveView):
     allow_future = False
 
     def get(self, request, *args, **kwargs):
-        print self.kwargs
         latest = ServiceReport.objects.latest('month').month
         self.year = self.kwargs['year'] if self.kwargs.has_key('year') else latest.strftime('%Y')
         self.month = self.kwargs['month'] if self.kwargs.has_key('month') else latest.strftime('%b')

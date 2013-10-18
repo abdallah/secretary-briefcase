@@ -1,4 +1,3 @@
-{% extends "base.html" %}
 {% block content %}
 <h2>{{ report.month|date:"F" }}</h2>
 <table class="table tablesorter table-bordered table-condensed" id="sortable">
@@ -37,6 +36,7 @@
     {% if next_month %}
         <a class="btn" href="{% url 'archive_month' year=next_month|date:'Y' month=next_month|date:'b' %}">{{ next_month|date:"F Y" }}</a>
     {% endif %}
+    {% for d in date_list %}{{ d }}{% endfor %}
 </div>
 <script>
 $(function() {

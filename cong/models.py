@@ -1,51 +1,55 @@
 from django.db import models
 from datetime import datetime
 from django.db.models import Count, Sum
+from django.core import serializers
 
 class Report(models.Manager):
     PUB, REG, AUX, SPIO = range(4)
+    month = None
+    year = None
+
     def set_month(self, year=None, month=None):
-        if month is None: 
-            month = self._latest_month()
-        else:
+        if month is not None: 
             sdate = '%s-%s-01' % (year, month)
             self.date = datetime.strptime(sdate, '%Y-%m-%d')
-            month = self.date.month
-        self.month = month
+        else: 
+            self._latest_month()
+        self.month = self.date.month
+        self.year = self.date.year
     
     def _latest_month(self):
-        self.date = self.latest('month').month
+        self.date = ServiceReport.objects.latest('month').month
         return self.date.strftime('%m')
         
     def auxiliary_pioneers(self):
         return [r.publisher for r 
             in self.filter(auxiliary_pioneer=True, 
-                month__month=self.month)]
+                month__month=self.month, month__year=self.year)]
         
     def regular_pioneers(self):
 
         return [r.publisher for r 
             in self.filter(publisher__is_regular_pioneer=True,
-                month__month=self.month)]
+                month__month=self.month, month__year=self.year)]
         
     def publishers(self):
         return [r.publisher for r 
             in self.filter(auxiliary_pioneer=False, 
-                month__month=self.month, 
+                month__month=self.month,  month__year=self.year,
                 publisher__is_regular_pioneer=False, 
                 publisher__is_special_pioneer=False)]        
     
     def group_report(self, group):
         if group==self.PUB:
-            r = self.filter(month__month=self.month, 
+            r = self.filter(month__month=self.month, month__year=self.year,
                 auxiliary_pioneer=False, 
                 publisher__is_regular_pioneer=False, 
                 publisher__is_special_pioneer=False)
         if group==self.REG:
-            r = self.filter(month__month=self.month, 
+            r = self.filter(month__month=self.month , month__year=self.year, 
                 publisher__is_regular_pioneer=True)
         if group==self.AUX:
-            r = self.filter(month__month=self.month, 
+            r = self.filter(month__month=self.month, month__year=self.year, 
                 auxiliary_pioneer=True)
         result = r.aggregate(
             count=Count('publisher'), 
@@ -58,12 +62,22 @@ class Report(models.Manager):
         return result
     
     def did_not_report(self):
-        filled = self.filter(month__month=self.month)
+        filled = self.filter(month__month=self.month, month__year=self.year)
         return Publisher.objects.exclude(servicereport__in=filled).order_by('group')
     
     def active_publishers(self):
-        return len(self.filter(month__month=self.month))
-        
+        return len(self.filter(month__month=self.month, month__year=self.year))
+    
+class Congregation(models.Model): 
+    name = models.CharField(max_length=50)
+    number = models.IntegerField()
+    
+class Attendance(models.Model):
+    MEETINGS = ( ('MW', 'Mid Week'), ('WE', 'Weekend') )
+    meeting = models.CharField(max_length=2, choices=MEETINGS)
+    date = models.DateField()
+    number = models.IntegerField()
+    
 class Group(models.Model):
     name = models.CharField(max_length=50)
     overseer = models.ForeignKey('Publisher', 
@@ -85,6 +99,9 @@ class Publisher(models.Model):
     is_regular_pioneer = models.BooleanField(default=False)
     is_special_pioneer = models.BooleanField(default=False)
     group = models.ForeignKey('Group', blank=True, null=True)
+
+    class Meta:
+        ordering = ['last_name', 'first_name']
     
     def __unicode__(self):
         return self.get_name()
@@ -92,6 +109,8 @@ class Publisher(models.Model):
     def get_name(self):
         return "%s %s" % (self.first_name, self.last_name)
         
+    def to_json(self):
+        return serializers.serialize("json", self)
     
     
 class ServiceReport(models.Model):
