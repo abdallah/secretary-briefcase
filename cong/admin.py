@@ -15,7 +15,7 @@ class SRInline(admin.TabularInline):
     
 class PubAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'telephone', 'group')
-    list_filter = ('group', 'is_regular_pioneer', 'is_special_pioneer')
+    list_filter = ('group', )
     inlines = [ SRInline, ]
     
 

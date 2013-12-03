@@ -111,7 +111,13 @@ class Publisher(models.Model):
         
     def to_json(self):
         return serializers.serialize("json", self)
-    
+        
+class Pioneer(models.Model):
+    TYPES = ( ('RE', 'Regular'), ('SP', 'Special') )
+    publisher = models.ForeignKey ('Publisher')
+    pioneer_type = models.CharField(max_length=2, choices=TYPES)
+    date_started = models.DateField()
+    date_stopped = models.DateField()
     
 class ServiceReport(models.Model):
     publisher = models.ForeignKey('Publisher')
