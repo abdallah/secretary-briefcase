@@ -58,7 +58,7 @@
 <dl>
 {% for pub in dnr %}
     {% ifchanged pub.group %}<dt>{{ pub.group }}</dt>{% endifchanged %}
-    <dd><a href='{% url "card" pub.pk %}' data-toggle="modal" data-target="#myModal">{{ pub.get_name }}</a></dd>
+    <dd><a href='{% url "card" pub.pk %}' data-toggle="modal" data-target="#myModal.modal-body">{{ pub.get_name }}</a></dd>
 {% endfor %}
 </dl>
 {% endif %}

@@ -1,45 +1,59 @@
-<h2><a href="{% url 'admin:cong_publisher_change' publisher.pk%}">{{ publisher }}</a></h2>
-<table class="table table-condensed">
-    <tr>
-        <th>Address: </th><td>{{ publisher.address }}</td>
-        <th>Telephone: </th><td>{{ publisher.telephone }}</td>
-    </tr>
-    <tr>
-        <th>Date of birth: </th><td>{{ publisher.date_of_birth }}</td>
-        <th>Date immersed: </th><td>{{ publisher.date_immersed }}</td>
-    </tr>
-    <tr>
-        <th>Privileges: </th>
-        <td>{% if publisher.is_annointed %}Annointed{% endif %}</td>
-        <td>{% if publisher.is_elder %}Elder{% endif %}</td>
-        <td>{% if publisher.is_ministerial_servant %}Min. Svt{% endif %}</td>
-        <td>{% if publisher.is_regualr_pioneer %}Regular Pioneer{% endif %}</td>
-    </tr>
-</table>
-<table class="table table-hover table-condensed">
-    <tr>
-        <th>Month</th>
-        <th>Hours</th>
-        <th>Magazines</th>
-        <th>Visits</th>
-        <th>Studies</th>
-        <th>Books</th>
-        <th>Booklets/Brochures</th>
-        <th>Auxiliary</th>
-        <th>Remarks</th> 
-    </tr>
-    {% regroup publisher.servicereport_set.all by month as reports %}
-    {% for sr in publisher.servicereport_set.all %}
-    <tr>
-        <td>{{ sr.month|date:"F"|capfirst }}</td>
-        <td>{{ sr.hours }}</td>
-        <td>{{ sr.magazines|default_if_none:"" }}</td>
-        <td>{{ sr.visits|default_if_none:"" }}</td>
-        <td>{{ sr.studies|default_if_none:"" }}</td>
-        <td>{{ sr.books|default_if_none:"" }}</td>
-        <td>{{ sr.booklets_brochures|default_if_none:"" }}</td>
-        <td>{% if sr.auxiliary_pioneer %}Yes{% endif %}</td>
-        <td>{{ sr.remarks|default_if_none:"" }}</td> 
-    </tr>
-    {% endfor %}
-</table>
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h2 id="myModalLabel"><a href="{% url 'admin:cong_publisher_change' publisher.pk%}">{{ publisher }}</a></h2>
+        </div>
+        <div class="modal-body">
+            <table class="table table-condensed table-bordered">
+                <tr>
+                    <th>Address: </th><td>{{ publisher.address }}</td>
+                    <th>Telephone: </th><td>{{ publisher.telephone }}</td>
+                </tr>
+                <tr>
+                    <th>Date of birth: </th><td>{{ publisher.date_of_birth }}</td>
+                    <th>Date immersed: </th><td>{{ publisher.date_immersed }}</td>
+                </tr>
+                <tr>
+                    <th>Privileges: </th>
+                    <td>{% if publisher.is_annointed %}Annointed{% endif %}</td>
+                    <td>{% if publisher.is_elder %}Elder{% endif %}
+                        {% if publisher.is_ministerial_servant %}Min. Svt{% endif %}</td>
+                    <td>{% if publisher.is_regualr_pioneer %}Regular Pioneer{% endif %}</td>
+                </tr>
+            </table>
+            <table class="table table-hover table-condensed">
+                <tr>
+                    <th>Month</th>
+                    <th>Hours</th>
+                    <th>Magazines</th>
+                    <th>Visits</th>
+                    <th>Studies</th>
+                    <th>Books</th>
+                    <th>Booklets/Brochures</th>
+                    <th>Auxiliary</th>
+                    <th>Remarks</th> 
+                </tr>
+                {% regroup publisher.servicereport_set.all by month as reports %}
+                {% for sr in publisher.servicereport_set.all|slice:"6" %}
+                <tr>
+                    <td>{{ sr.month|date:"F"|capfirst }}</td>
+                    <td>{{ sr.hours }}</td>
+                    <td>{{ sr.magazines|default_if_none:"" }}</td>
+                    <td>{{ sr.visits|default_if_none:"" }}</td>
+                    <td>{{ sr.studies|default_if_none:"" }}</td>
+                    <td>{{ sr.books|default_if_none:"" }}</td>
+                    <td>{{ sr.booklets_brochures|default_if_none:"" }}</td>
+                    <td>{% if sr.auxiliary_pioneer %}Yes{% endif %}</td>
+                    <td>{{ sr.remarks|default_if_none:"" }}</td> 
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+        </div>
+    </div>
+</div>
+
+

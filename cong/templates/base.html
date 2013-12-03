@@ -18,22 +18,19 @@
             }
             
             @media (max-width: 980px) {
-            /* Enable use of floated navbar text */
-            .navbar-text.pull-right {
-                float: none;
-                padding-left: 50px;
-                padding-right: 5px;
+                /* Enable use of floated navbar text */
+                .navbar-text.pull-right {
+                    float: none;
+                    padding-left: 50px;
+                    padding-right: 5px;
+                }
             }
+            .modal-dialog {
+                width: 60%;
             }
-            body .modal {
-                width: 70%; /* desired relative width */
-                left: 15%; /* (100%-width)/2 */
-                /* place center */
-                margin-left:auto;
-                margin-right:auto; 
-            }
+            
         </style>
-        <link href="{% static 'css/bootstrap-responsive.min.css' %}" rel="stylesheet">
+        <!-- link href="{% static 'css/bootstrap-responsive.min.css' %}" rel="stylesheet"-->
         <script src="{% static 'js/jquery.min.js' %}"></script>
         <script src="{% static 'js/bootstrap.min.js' %}"></script>
         <script src="{% static 'js/bootstrap-datepicker.js' %}"></script>
@@ -135,21 +132,25 @@
     
 	{% endblock %}
     
-        <div class="container-fluid">
+        <div class="container">
         {% block content %}{% endblock %}
         </div>
         <!-- Modal -->
-        <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h3 id="myModalLabel">Publisher Card</h3>
-            </div>
-            <div class="modal-body">
-                <p>One fine body…</p>
-            </div>
-            <div class="modal-footer">
-                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-            </div>
-        </div>
+        <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h3 id="myModalLabel">Publisher Card</h3>
+                    </div>
+                    <div class="modal-body">
+                        <p>One fine body…</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                    </div>
+                </div>
+            </div><!-- .modal-content > .modal-dialog -->
+        </div><!-- modal -->
     </body>
 </html>
