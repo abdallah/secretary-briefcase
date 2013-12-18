@@ -1,7 +1,22 @@
 from django.db import models
-from datetime import datetime
+from datetime import datetime, date, timedelta
 from django.db.models import Count, Sum
 from django.core import serializers
+from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext as _
+
+
+def last_month(sdate=None):
+    """
+    Utility function to get set last month from current date
+    """
+    if sdate is None:
+        today = date.today()
+    else: 
+        today = sdate
+    first = date(day=1, month=today.month, year=today.year)
+    lastmonth = first - timedelta(days=10)
+    return lastmonth 
 
 class Report(models.Manager):
     PUB, REG, AUX, SPIO = range(4)
@@ -138,3 +153,18 @@ class ServiceReport(models.Model):
     def __unicode__(self):
         return "%s - %s" % (self.publisher, self.month.strftime('%b %Y'))
     
+    def clean(self):
+        if not self.month: 
+            raise ValidationError(_("Make sure to set the month."))
+        if self.hours <= 0:
+            raise ValidationError(_("Service report should be at least 1 hour"))
+        if not self.pk:
+            if ServiceReport.objects.filter(publisher=self.publisher,
+                                        month__month=self.month.month, 
+                                        month__year=self.month.year):
+                raise ValidationError(_("A report already exists for this month."))
+        
+        
+    def save(self, *args, **kwargs):
+        self.clean()
+        super(ServiceReport, self).save(*args, **kwargs)

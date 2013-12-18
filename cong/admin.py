@@ -12,12 +12,12 @@ class SRInline(admin.TabularInline):
             'widget': forms.Textarea(attrs={'cols': 80, 'rows': 1})
         }
     }
-    
+
 class PubAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'telephone', 'group')
     list_filter = ('group', )
     inlines = [ SRInline, ]
-    
+    actions_on_top = True
 
 class SRAdmin(admin.ModelAdmin):
     list_select_related = True

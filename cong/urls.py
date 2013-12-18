@@ -13,14 +13,16 @@ urlpatterns = patterns('',
         ReportsMonthView.as_view(month_format='%m'),
         name="archive_month_numeric"),
 
-    url(r'^g/(?P<group>\d)/(?P<year>\d{4})/(?P<month>[-\w]+)/$', # 
+    url(r'^g/(?P<group>\d+)/(?P<year>\d{4})/(?P<month>[-\w]+)/$', # 
         ReportsMonthView.as_view(),
         name="report_group_month"),
-    url(r'^g/(?P<group>\d)/$', # 
+    url(r'^g/(?P<group>\d+)/$', # 
         ReportsMonthView.as_view(),
         name="report_group"),
     url(r'^$',
         ReportsIndexView.as_view(),
         name="report_month"),
-
+    url(r'^add/(?P<publisher>\d+)/$', 
+        ReportCreate.as_view(),
+        name="report_add")
 )

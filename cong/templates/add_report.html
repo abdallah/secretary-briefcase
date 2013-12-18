@@ -1,0 +1,17 @@
+<form role="form" action="">
+	{{formset}}
+  <div class="form-group">
+    <label for="publisher">{{publisher.name}}</label>
+    <input type="text" class="form-control" id="publisher" placeholder="Publisher name">
+  </div>
+  <div class="form-group">
+    <div class="input-append date" id="dpMonths" data-date="{{lastmonth}}" data-date-format="yyyy/mm" data-date-viewmode="years" data-date-minviewmode="months">
+      <input type="text" value="{{lastmonth}}" readonly="">
+      <span class="add-on"><i class="icon-calendar"></i></span>
+    </div>
+  </div>
+  <div class="form-group">
+  	<label for="hours">Hours</label>
+  	<input type="text" />
+  </div>
+</form>

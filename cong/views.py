@@ -5,10 +5,13 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.core import serializers
 from django.views import generic
+from django.forms import ModelForm
+from django.views.generic.edit import FormView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.db.models import Q
 import json
 import logging
-from cong.models import Publisher, ServiceReport, Group, Report
+from cong.models import Publisher, ServiceReport, Group, Report, last_month
 
 
 def home(request, year=None, month=None):
@@ -62,10 +65,13 @@ class PublisherList(ListView):
         return serializers.serialize('json', context['publisher_list'])
     
     def get_queryset(self):
-        return Publisher.objects.filter(
-            Q(first_name__icontains=self.kwargs['name']) |
-            Q(last_name__icontains=self.kwargs['name'])
-        )
+        if self.kwargs.has_key('q'):
+            return Publisher.objects.filter(
+                Q(first_name__icontains=self.kwargs['q']) |
+                Q(last_name__icontains=self.kwargs['q'])
+            )
+        else: 
+            return Publisher.objects.all()
 
 class ReportsMonthView(MonthArchiveView):
     queryset = ServiceReport.objects.all()
@@ -88,6 +94,26 @@ class ReportsMonthView(MonthArchiveView):
         else: 
             return ServiceReport.objects.all()
 
+class ReportForm(ModelForm):
+    class Meta: 
+        model = ServiceReport
+        
+class ReportCreate(CreateView):
+    model = ServiceReport
+    success_url = "/"
+    
+    def get_initial(self):
+        return {'publisher': self.kwargs['publisher'],
+                'month': last_month()}
+    
+    def post(self, request, *args, **kwargs):
+        from datetime import datetime
+        post_values = request.POST.copy()
+        d = datetime.strptime(request.POST['month'], '%Y/%m')
+        post_values['month'] = datetime.strftime(d, '%Y-%m-%d')
+        request.POST = post_values
+        return super(ReportCreate, self).post(request, *args, **kwargs)
+    
 class ReportsIndexView(ArchiveIndexView):
     latest = ServiceReport.objects.latest('month').month
     queryset = ServiceReport.objects.filter(month__month=latest.month)

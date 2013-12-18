@@ -49,22 +49,33 @@
             });
         }
         $(function() {
-            var pubNames = [];
-            var pubMapped = {};
-            var publishers = [{% for p in everyone %}{"name":"{{ p.get_name }}","value":"{{ p.pk }}"}{% if not forloop.last %},{% endif %}{% endfor %}];
-            /*$.each(publishers, function(i, item) {
-                pubMapped[item.name] = item.id;
-                pubNames.push(item.name);
-            });*/
             $("#publookahead").typeahead({
                 name: 'publisher',
-                local: publishers
+                prefetch: {
+                	url: '{% url "publisherlist" %}',
+                	filter: function(data) {
+                		retval = [];
+                		for (var i=0; i<data.length; i++){
+                			retval.push({
+                				pk: data[i].pk,
+                				value: data[i].fields.first_name+' '+ data[i].fields.last_name,
+                				tokens: [data[i].fields.first_name, data[i].fields.last_name],
+                				template: '<p>'+data[i].fields.first_name+' '+ data[i].fields.last_name+'</p>'
+                			})
+                		}
+                		return retval;
+                	}
+                } 
+                
+            }).on('typeahead:selected', function(obj, datum){
+            	$('#hiddenid').val(datum.pk);
             });
             $("#addreport").click(function(){
                 var pid = $('#hiddenid').val();
                 if (pid) {
-                    var url = "{% url 'admin:cong_publisher_change' 999 %}".replace(999, pid);
-                    window.location = url;
+                    var url = "{% url 'report_add' publisher=999 %}".replace(999, pid);
+                    //window.location = url;
+                    $('#myModal').load(url,function(e){$('#myModal').modal('show');});
                 }
                 return false;
             });
@@ -72,24 +83,27 @@
                 var pid = $('#hiddenid').val();
                 if (pid) {
                     var url = "{% url 'card' 999 %}".replace(999, pid);
-                    this.href = url;
-                    return true;
+                    $('#myModal').load(url,function(e){$('#myModal').modal('show');});
                 }
                 return false;
+            });
+            $(".modallink").click(function(){
+            	var url = this.href;
+            	$('#myModal').load(url,function(e){$('#myModal').modal('show');});
             });
             $("#myModal").on("hidden", function(){
                 $(this).removeData('modal');
             });
-           
+           $('#id_month').datepicker()
         });
         </script>
     </head>
     <body>
 	{% block navbar %}
 	<div class="navbar navbar-default navbar-fixed-top">
-	    <div class="navbar-header">
+	    <!-- div class="navbar-header">
 	        <h1 class="brand" href="#">NEC - Secretary</h1>
-        </div>
+            </div-->
         <div class="collapse navbar-collapse navbar-ext1-collapse"></div>
 	        <ul class="nav navbar-nav">
 	            <li class="active"><a href="{% url 'home' %}">Home</a></li>
@@ -97,7 +111,7 @@
                     <a data-target="#" href="{% url 'report_month' %}" class="dropdown-toggle" data-toggle="dropdown">
                     Reports <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                        <li><a href="{% url 'report_month' %}" class="ajax">Latest report</a></li>
+                        <li><a href="{% url 'report_month' %}">Latest report</a></li>
                         <li>    
                             <div class="input-append date" id="dp3" data-date="12-02-2012" data-date-format="dd-mm-yyyy">
                                 <input class="span2" size="16" type="text" value="12-02-2012">
@@ -117,14 +131,15 @@
                     </ul>
                 </li>
 	      	    <li><a href="{% url 'admin:index' %}">Admin</a></li>
+	      	    <li><a href="{% url 'backup' %}">Backup</a></li>
 	        </ul>
             <form class="navbar-form pull-right">
                 <input id="publookahead" type="text" 
                     data-items="4" data-provide="typeahead" class="span2" autocomplete="off">
                 <input id="hiddenid" type="hidden">
                 <div class="btn-group">
-                    <button class="btn" id="addreport">Add</button>
-                    <a class="btn" href="#" data-toggle="modal" data-target="#myModal" id="showreport">Report</a>
+                    <button class="btn" id="addreport">Add Report</button>
+                    <button class="btn" id="showreport">Publisher Card</a>
                 </div>
             </form>
 	    </div>
