@@ -62,5 +62,11 @@
 {% endfor %}
 </dl>
 {% endif %}
+<script>
+$(function() {
+    $('.navbar li').removeClass('active');
+    $('.navbar #page_home').addClass('active')
+});    
+</script>
 
 {% endblock %}

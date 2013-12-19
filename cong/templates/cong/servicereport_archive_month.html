@@ -40,10 +40,12 @@
 </div>
 <script>
 $(function() {
-    $("table").dataTable({
-        "iDisplayLength": 50
-        
+    $(".table").dataTable({
+        "iDisplayLength": 50,
+        "bDestroy": true       
     });
+    $('.navbar li').removeClass('active');
+    $('.navbar #page_reports').addClass('active')
 });
 </script>
 {% endblock %}

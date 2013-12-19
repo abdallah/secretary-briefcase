@@ -98,6 +98,9 @@ class Group(models.Model):
     overseer = models.ForeignKey('Publisher', 
         related_name='overseer', limit_choices_to = {'is_elder': True})
     
+    class Meta:
+        ordering = ['name', ]
+
     def __unicode__(self):
         return "%s - %s" % (self.name, self.overseer)
 
@@ -168,3 +171,9 @@ class ServiceReport(models.Model):
     def save(self, *args, **kwargs):
         self.clean()
         super(ServiceReport, self).save(*args, **kwargs)
+
+class Attendance(models.Model):
+    MEETINGS = ( ('MW', 'Mid Week'), ('WE', 'Weekend') )
+    meeting = models.CharField(max_length=2, choices=MEETINGS)
+    date = models.DateField(help_text=_("Date of meeting"))
+    number = models.PositiveIntegerField(help_text=_("Number in attendance"))
