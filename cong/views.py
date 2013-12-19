@@ -11,7 +11,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.db.models import Q
 import json
 import logging
-from cong.models import Publisher, ServiceReport, Group, Report, last_month
+from cong.models import *
 
 
 def home(request, year=None, month=None):
@@ -127,4 +127,8 @@ class ReportCreate(CreateView):
         request.POST = post_values
         return super(ReportCreate, self).post(request, *args, **kwargs)
     
-    
+class AttendanceMonthView(MonthArchiveView):
+    model = Attendance
+    date_field = "date"
+    allow_future = False
+    make_object_list = True
