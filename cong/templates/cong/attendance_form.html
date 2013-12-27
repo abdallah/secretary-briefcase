@@ -1,0 +1,39 @@
+<style>
+.datepicker{z-index:1151 !important;}
+</style>
+<div class="modal-dialog">
+    <div class="modal-content">
+    	<form role="form" class="form" method="post" action="{% url 'attendance_add' %}">
+    	{% csrf_token %}
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h2 id="myModalLabel">Meeting Attendance</h2>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+				<label for="id_meeting">Meeting</label>
+			    {{form.meeting}}
+			</div>
+			<div class="form-group">
+				<label for="id_meeting_date">Date</label>
+			    <input type="text" 
+			    	class="form-control datepicker col-sm-4" 
+			    	id="id_meeting_date" 
+			    	name="meeting_date"
+					value="{{form.meeting_date.value}}">
+			</div>
+			<div class="form-group">
+				<label for="id_number">Attendance</label>
+			    <input type="text" class="form-control" id="id_number" name="number" placeholder="Number in attendance">
+			</div>
+			 <button type="submit" class="btn btn-primary">Submit</button>
+		</form>
+	</div>
+</div>
+<script >
+	$(function() {
+ 		$('#id_meeting_date').datepicker({
+			autoclose: true
+ 		});
+    });
+</script>

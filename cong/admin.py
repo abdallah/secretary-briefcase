@@ -1,5 +1,5 @@
 from django.contrib import admin
-from cong.models import Publisher, ServiceReport, Group
+from cong.models import Publisher, ServiceReport, Group, Attendance
 from django import forms
 from django.db import models
 
@@ -32,3 +32,4 @@ class SRAdmin(admin.ModelAdmin):
 admin.site.register(Group)
 admin.site.register(Publisher, PubAdmin)
 admin.site.register(ServiceReport, SRAdmin)
+admin.site.register(Attendance)

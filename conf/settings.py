@@ -6,7 +6,32 @@ ADMINS = (
 )
 
 MANAGERS = ADMINS
+DATABASES = {}
+USE_SQLITE = True
+sqlitedb = {
+        'ENGINE': 'django.db.backends.sqlite3', 
+        'NAME': 'congregation.sqlite'
+}
+mysqldb = {
+        'ENGINE': 'django.db.backends.mysql', 
+        'NAME': 'nec', 
+        'USER': 'necuser',
+        'PASSWORD': 'necpass', 
+}
 
+try:
+    import androidhelper
+    print 'running in android'
+    DATABASES['default'] = sqlitedb
+except:
+    print 'running on server'
+    DATABASES['default'] = mysqldb
+    if USE_SQLITE:
+        DATABASES['default'] = sqlitedb
+
+print DATABASES['default']['ENGINE']        
+
+'''
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
@@ -17,6 +42,7 @@ DATABASES = {
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
     }
 }
+'''
 
 ALLOWED_HOSTS = []
 TIME_ZONE = 'Asia/Beirut'

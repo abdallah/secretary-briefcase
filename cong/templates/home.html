@@ -1,67 +1,112 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Report {{ report_month|date:"F" }}</h1>
-<h2>Active Publishers: <em>{{ active_publishers }}</em></h2>
-<h2>Auxiliary Pioneers: <em>{{ auxiliary_pioneers|length }}</em></h2>
-<ul>
-{% for ap in auxiliary_pioneers %}
-<li><a href='{% url "card" ap.pk %}' data-toggle="modal" data-target="#myModal">{{ ap.get_name }}</a></li>
-{% endfor %}
-</ul>
-{# publishers #}
+<div class="row">
+    <div class="col-md-3">
+    <div class="panel panel-primary" id="shortcuts">
+        <div class="panel-heading">Shortcuts</div>
+            <div class="list-group">
+                <a class="list-group-item modallink" href="{% url 'attendance_add' %}"><i class="fa fa-users"></i> Add Attendance Report</a>
+                <a class="list-group-item modallink" href="{% url 'publisher_add' %}" ><i class="fa fa-user"></i> Add Publisher</a>
+                <a class="list-group-item" href="{% url 'admin:index' %}"><i class="fa fa-tasks"></i> Admin</a>
+                <a class="list-group-item" href="{% url 'backup' %}"><i class="fa fa-cloud-upload"></i> Backup</a>
+            </div>
+    </div>
+        </div>
+    <div class="col-md-9">
+    <div class="panel panel-success" id="current_report">
+        <div class="panel-heading"><h2>Current Report: {{ report_month|date:"F" }}</h2></div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-sm-4"><div class="panel panel-info">
+                    <div class="panel-heading"><h3>Reports</h3></div>                        
+                    <div class="list-group">
+                        <li class="list-group-item">Active Publishers: <span class="badge">{{ active_publishers }}</span></li>
+                        <li class="list-group-item">Auxiliary Pioneers: <span class="badge">{{ auxiliary_pioneers|length }}</span></li>
+                    </div>
+                </div></div>
+                <div class="col-sm-4"><div class="panel panel-danger">
+                    <div class="panel-heading"><h3>Did not report</h3></div>
+                    <div class="list-group">
+                        {% for pub in dnr %}
+                        {% ifchanged pub.group %}
+                            {% if not forloop.first %}</div>{% endif %}
+                            {% if pub.group %}
+                            <h4><a class="list-group-item" data-toggle="collapse" data-target="#group{{pub.group.id}}" href="#"> {{ pub.group }}<span class="badge"></span>	</a>
+			    </h4>
+                            <div id="group{{pub.group.id}}" class="collapse">
+                            {% else %}
+                            <h4><a class="list-group-item" data-toggle="collapse" data-target="#groupX" href="#">No Group<span class="badge"></span>	</a>
+			    </h4>
+                            <div id="groupX" class="collapse">
+                            {% endif %}
+                        {% endifchanged %}
+                        <a class="modallink list-group-item" 
+                               href='{% url 'report_add' publisher=pub.pk %}' 
+                               data-toggle="modal" data-target="#myModal">
+                             <i class="fa fa-plus-circle"></i> {{pub.get_name}}</a>
+                             {% endfor %} 
+                        </div>
+                    </div>
+                      </div></div>
+                <div class="col-sm-4"><div class="panel panel-success">
+                    <div class="panel-heading"><h3>Auxiliary Pioneers</h3></div>
+                    <div class="list-group">
+                        {% for ap in auxiliary_pioneers %}
+                        <a class="list-group-item" href='{% url "card" ap.pk %}' data-toggle="modal" data-target="#myModal"><i class="fa fa-folder-o"></i> {{ ap.get_name }}</a>
+                        {% endfor %}
+                    </div>
+                </div></div>
+                </div> 
+            <div class="row">
+                <table class="table table-hover">
+                    <tr>
+                    <th>Group</th>
+                    <th>Count</th>
+                    <th>Hours</th>
+                    <th>Magazines</th>
+                    <th>Visits</th>
+                    <th>Studies</th>
+                    <th>Books</th>
+                    <th>Booklets/Brochures</th>
+                    </tr>
+		    <tr>
+		    <td>Publishers</td>
+		    <td>{{ pub_report.count }}</td>
+		    <td>{{ pub_report.hours }}</td>
+		    <td>{{ pub_report.magazines }}</td>
+		    <td>{{ pub_report.visits }}</td>
+		    <td>{{ pub_report.studies }}</td>
+		    <td>{{ pub_report.books }}</td>
+		    <td>{{ pub_report.booklets_brochures }}</td>
+		    </tr>
+		    <tr>
+		    <td>Auxiliary Pioneers</td>
+		    <td>{{ aux_report.count }}</td>
+		    <td>{{ aux_report.hours }}</td>
+		    <td>{{ aux_report.magazines }}</td>
+		    <td>{{ aux_report.visits }}</td>
+		    <td>{{ aux_report.studies }}</td>
+		    <td>{{ aux_report.books }}</td>
+		    <td>{{ aux_report.booklets_brochures }}</td>
+		    </tr>
+		    <tr>
+		    <td>Regular Pioneers</td>
+		    <td>{{ reg_report.count }}</td>
+		    <td>{{ reg_report.hours }}</td>
+		    <td>{{ reg_report.magazines }}</td>
+		    <td>{{ reg_report.visits }}</td>
+		    <td>{{ reg_report.studies }}</td>
+		    <td>{{ reg_report.books }}</td>
+		    <td>{{ reg_report.booklets_brochures }}</td>
+		    </tr>
+		</table>
+            </div><!--/row-->
+        </div><!--/panel-body-->
+    </div><!--/panel-->
+	</div><!--/col-md-9-->
+</div><!--/row-->
  
-<table class="table table-hover">
-    <tr>
-        <th>Group</th>
-        <th>Count</th>
-        <th>Hours</th>
-        <th>Magazines</th>
-        <th>Visits</th>
-        <th>Studies</th>
-        <th>Books</th>
-        <th>Booklets/Brochures</th>
-    </tr>
-    <tr>
-        <td>Publishers</td>
-        <td>{{ pub_report.count }}</td>
-        <td>{{ pub_report.hours }}</td>
-        <td>{{ pub_report.magazines }}</td>
-        <td>{{ pub_report.visits }}</td>
-        <td>{{ pub_report.studies }}</td>
-        <td>{{ pub_report.books }}</td>
-        <td>{{ pub_report.booklets_brochures }}</td>
-    </tr>
-    <tr>
-        <td>Auxiliary Pioneers</td>
-        <td>{{ aux_report.count }}</td>
-        <td>{{ aux_report.hours }}</td>
-        <td>{{ aux_report.magazines }}</td>
-        <td>{{ aux_report.visits }}</td>
-        <td>{{ aux_report.studies }}</td>
-        <td>{{ aux_report.books }}</td>
-        <td>{{ aux_report.booklets_brochures }}</td>
-    </tr>
-    <tr>
-        <td>Regular Pioneers</td>
-        <td>{{ reg_report.count }}</td>
-        <td>{{ reg_report.hours }}</td>
-        <td>{{ reg_report.magazines }}</td>
-        <td>{{ reg_report.visits }}</td>
-        <td>{{ reg_report.studies }}</td>
-        <td>{{ reg_report.books }}</td>
-        <td>{{ reg_report.booklets_brochures }}</td>
-    </tr>
-</table>
 
-{% if dnr %}
-<h2>Did not report yet:</h2>
-<dl>
-{% for pub in dnr %}
-    {% ifchanged pub.group %}<dt>{{ pub.group }}</dt>{% endifchanged %}
-    <dd><a class="modallink" href='{% url 'report_add' publisher=pub.pk %}' data-toggle="modal" data-target="#myModal">{{ pub.get_name }}</a></dd>
-{% endfor %}
-</dl>
-{% endif %}
 <script>
 $(function() {
     $('.navbar li').removeClass('active');

@@ -5,7 +5,6 @@ from django.core import serializers
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
 
-
 def last_month(sdate=None):
     """
     Utility function to get set last month from current date
@@ -85,12 +84,6 @@ class Report(models.Manager):
     
 class Congregation(models.Model): 
     name = models.CharField(max_length=50)
-    number = models.IntegerField()
-    
-class Attendance(models.Model):
-    MEETINGS = ( ('MW', 'Mid Week'), ('WE', 'Weekend') )
-    meeting = models.CharField(max_length=2, choices=MEETINGS)
-    date = models.DateField()
     number = models.IntegerField()
     
 class Group(models.Model):
@@ -175,5 +168,13 @@ class ServiceReport(models.Model):
 class Attendance(models.Model):
     MEETINGS = ( ('MW', 'Mid Week'), ('WE', 'Weekend') )
     meeting = models.CharField(max_length=2, choices=MEETINGS)
-    date = models.DateField(help_text=_("Date of meeting"))
-    number = models.PositiveIntegerField(help_text=_("Number in attendance"))
+    meeting_date = models.DateField(help_text=_("Date of meeting"))
+    number = models.PositiveIntegerField(help_text=_("Number in attendance"), unique_for_date='meeting_date')
+    
+    def __unicode__(self):
+        return u'Attendance for %s meeting [%s]: %s' % (self.meeting, self.meeting_date, self.number) 
+    
+    class Meta:
+        ordering = ['-meeting_date',]
+        unique_together = (('meeting', 'meeting_date'),)
+

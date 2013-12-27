@@ -4,42 +4,84 @@
 <html>
     <head>
         <title>Secretary Briefcase</title>
+        <script src="{% static 'js/jquery.min.js' %}"></script>
         <link href="{% static 'css/jquery.dataTables.css' %}" rel="stylesheet">
         <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
         <link href="{% static 'css/datepicker.css' %}" rel="stylesheet">
         <link href="{% static 'css/typeahead.js-bootstrap.css' %}" rel="stylesheet">
+        <link href="{% static 'font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
+	<link href="{% static 'css/style.css' %}" rel="stylesheet">
         <style type="text/css">
-            body {
-                padding-top: 120px;
-                padding-bottom: 40px;
-            }
-            .sidebar-nav {
-                padding: 9px 0;
-            }
-            
-            @media (max-width: 980px) {
-                /* Enable use of floated navbar text */
-                .navbar-text.pull-right {
-                    float: none;
-                    padding-left: 50px;
-                    padding-right: 5px;
-                }
-            }
-            .modal-dialog {
-                width: 60%;
-            }
-	    .dropdown-menu {
-		min-width: 200px;
-	    }
-        </style>
+                    </style>
         <!-- link href="{% static 'css/bootstrap-responsive.min.css' %}" rel="stylesheet"-->
-        <script src="{% static 'js/jquery.min.js' %}"></script>
-        <script src="{% static 'js/bootstrap.min.js' %}"></script>
-        <script src="{% static 'js/bootstrap-datepicker.js' %}"></script>
-        <script src="{% static 'js/typeahead.min.js' %}"></script>
-        <script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
-        <script src="{% static 'js/eldarion-ajax.min.js' %}"></script>        
-        <script >
+    </head>
+    <body>
+    {% block navbar %}
+    <div class="navbar navbar-default navbar-fixed-top">
+        <ul class="nav navbar-nav">
+            <li id="page_home" class="active"><a href="{% url 'home' %}">Home</a></li>
+            <li id="page_reports" class="dropdown">
+                <a data-target="#" href="{% url 'report_month' %}" class="dropdown-toggle" data-toggle="dropdown">
+                Reports <span class="caret"></span></a>
+                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                    <li><a href="{% url 'report_month' %}">Latest report</a></li>
+		    <li class="divider"></li>
+		    {% for group in groups %}
+		    <li><a href="{% url 'report_group' group.pk %}">{{ group }}</a></li>
+		    {% endfor %}
+		    <li class="divider"></li>
+                    <li><div id="dp3"></div></li>
+                </ul>
+            </li>
+            <li id="page_attendance"><a href="{% url 'attendance_month' %}">Attendance</a></li>
+            <li><a href="{% url 'admin:index' %}">Admin</a></li>
+            <li><a href="{% url 'backup' %}">Backup</a></li>
+        </ul>
+        <form class="navbar-form pull-right">
+            <input id="publookahead" type="text" 
+                   data-items="4" data-provide="typeahead" class="span2" autocomplete="off">
+            <input id="hiddenid" type="hidden">
+            <div class="btn-group">
+                <button class="btn btn-default" id="addreport"><i class="fa fa-plus-square"></i></button>
+                <button class="btn btn-default" id="showreport"><i class="fa fa-user"></i></a>
+            </div>
+        </form>
+    </div>
+    {% endblock %}
+    
+    <div class="container">
+	    {% for message in messages %}
+	    <div class="alert alert-{{ message.tags }} alert-dismissable">
+		 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+		 {{ message }}
+	    </div>
+	    {% endfor %}    
+    {% block content %}{% endblock %}
+    </div>
+
+    <!-- Modal -->
+    <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h3 id="myModalLabel">Publisher Card</h3>
+                </div>
+                <div class="modal-body">
+                    <p>One fine body…</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                </div>
+            </div>
+        </div><!-- .modal-content > .modal-dialog -->
+    </div><!-- modal -->
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap-datepicker.js' %}"></script>
+    <script src="{% static 'js/typeahead.min.js' %}"></script>
+    <script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'js/eldarion-ajax.min.js' %}"></script>        
+    <script >
         function tally (selector) {
             $(selector).each(function () {
                 var total = 0,
@@ -54,23 +96,23 @@
             $("#publookahead").typeahead({
                 name: 'publisher',
                 prefetch: {
-                	url: '{% url "publisherlist" %}',
-                	filter: function(data) {
-                		retval = [];
-                		for (var i=0; i<data.length; i++){
-                			retval.push({
-                				pk: data[i].pk,
-                				value: data[i].fields.first_name+' '+ data[i].fields.last_name,
-                				tokens: [data[i].fields.first_name, data[i].fields.last_name],
-                				template: '<p>'+data[i].fields.first_name+' '+ data[i].fields.last_name+'</p>'
-                			})
-                		}
-                		return retval;
-                	}
+                    url: '{% url "publisher_list" %}',
+                    filter: function(data) {
+                        retval = [];
+                        for (var i=0; i<data.length; i++){
+                            retval.push({
+                                pk: data[i].pk,
+                                value: data[i].fields.first_name+' '+ data[i].fields.last_name,
+                                tokens: [data[i].fields.first_name, data[i].fields.last_name],
+                                template: '<p>'+data[i].fields.first_name+' '+ data[i].fields.last_name+'</p>'
+                            })
+                        }
+                        return retval;
+                    }
                 } 
                 
             }).on('typeahead:selected', function(obj, datum){
-            	$('#hiddenid').val(datum.pk);
+                $('#hiddenid').val(datum.pk);
             });
             $("#addreport").click(function(){
                 var pid = $('#hiddenid').val();
@@ -90,84 +132,30 @@
                 return false;
             });
             $(".modallink").click(function(){
-            	var url = this.href;
-            	$('#myModal').load(url,function(e){$('#myModal').modal('show');});
+                var url = this.href;
+                $('#myModal').load(url,function(e){$('#myModal').modal('show');});
+                return false;
             });
             $("#myModal").on("hidden", function(){
                 $(this).removeData('modal');
             });
            $('#id_month').datepicker();
-	   $('#dp3').datepicker({autoclose: true, 
-				 startView: 1, 
-                                 minViewMode: 1,
-                                 format: "yyyy/M"
-                                 }).on('changeDate', function(ev){
-		var Months = [ 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec' ];
-                var y = ev.date.getFullYear();
-		var m = Months[ev.date.getMonth()];
-		var url = "{% url 'archive_month' year=9999 month='Jan' %}".replace('9999', y).replace('Jan', m);	
-                window.location = url;
+           $('#dp3').datepicker({autoclose: true, 
+                 startView: 1, 
+                 minViewMode: 1,
+                 format: "yyyy/M"
+           }).on('changeDate', function(ev){
+           var Months = [ 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec' ];
+                 var y = ev.date.getFullYear();
+           var m = Months[ev.date.getMonth()];
+           var url = "{% url 'archive_month' year=9999 month='Jan' %}".replace('9999', y).replace('Jan', m);    
+                 window.location = url;
+           });
+	   $.each($('.collapse'), function(i,l){ 
+                console.log('i:'+i); 
+                $(l).prev().find('.badge').text(l.children.length);
            });
         });
         </script>
-    </head>
-    <body>
-	{% block navbar %}
-	<div class="navbar navbar-default navbar-fixed-top">
-	        <ul class="nav navbar-nav">
-	            <li id="page_home" class="active"><a href="{% url 'home' %}">Home</a></li>
-                    <li id="page_reports" class="dropdown">
-                        <a data-target="#" href="{% url 'report_month' %}" class="dropdown-toggle" data-toggle="dropdown">
-                        Reports <span class="caret"></span></a>
-                        <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                            <li><a href="{% url 'report_month' %}">Latest report</a></li>
-                            <li class="dropdown-submenu">
-			        <a data-target="#" href="#"> <!-- class="dropdown-toggle" data-toggle="dropdown" -->
-                        	By Group<span class="caret"></span></a>
-                        	<ul class="dropdown-menu" role="menu">
-			    		{% for group in groups %}
-			    		<li><a href="{% url 'report_group' group.pk %}">{{ group }}</a></li>
-			    		{% endfor %}
-                        	</ul>
-                    	    </li>
-			    <li><div id="dp3">&nbsp;</div></li>
-                        </ul>
-                    </li>
-	      	    <li><a href="{% url 'admin:index' %}">Admin</a></li>
-	      	    <li><a href="{% url 'backup' %}">Backup</a></li>
-	        </ul>
-                <form class="navbar-form pull-right">
-                    <input id="publookahead" type="text" 
-                        data-items="4" data-provide="typeahead" class="span2" autocomplete="off">
-                    <input id="hiddenid" type="hidden">
-                    <div class="btn-group">
-                        <button class="btn" id="addreport">Add Report</button>
-                        <button class="btn" id="showreport">Publisher Card</a>
-                    </div>
-                </form>
-	</div>
-    
-	{% endblock %}
-    
-        <div class="container">
-        {% block content %}{% endblock %}
-        </div>
-        <!-- Modal -->
-        <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        <h3 id="myModalLabel">Publisher Card</h3>
-                    </div>
-                    <div class="modal-body">
-                        <p>One fine body…</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-                    </div>
-                </div>
-            </div><!-- .modal-content > .modal-dialog -->
-        </div><!-- modal -->
     </body>
 </html>

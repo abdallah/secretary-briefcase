@@ -1,4 +1,5 @@
-from django.shortcuts import get_object_or_404, render
+from django.utils.translation import ugettext as _
+from django.shortcuts import get_object_or_404, render, render_to_response
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.http import HttpResponseRedirect, HttpResponse
@@ -6,11 +7,15 @@ from django.core.urlresolvers import reverse
 from django.core import serializers
 from django.views import generic
 from django.forms import ModelForm
+from django.forms.formsets import formset_factory
+from django.forms.formsets import BaseFormSet
 from django.views.generic.edit import FormView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.db.models import Q
+from django.contrib import messages
 import json
 import logging
+from datetime import datetime
 from cong.models import *
 
 
@@ -81,6 +86,15 @@ class PublisherList(ListView):
         else: 
             return Publisher.objects.all()
 
+class PublisherCreate(CreateView):
+    model = Publisher
+    success_url = '/'
+
+    def post(self, request, *args, **kwargs):
+        messages.success(request, 'Publisher added')
+        return super(PublisherCreate, self).post(request, *args, **kwargs)
+
+
 class ReportsMonthView(MonthArchiveView):
     queryset = ServiceReport.objects.all()
     date_field = "month"
@@ -120,15 +134,77 @@ class ReportCreate(CreateView):
                 'month': last_month()}
     
     def post(self, request, *args, **kwargs):
-        from datetime import datetime
         post_values = request.POST.copy()
         d = datetime.strptime(request.POST['month'], '%Y/%m')
         post_values['month'] = datetime.strftime(d, '%Y-%m-%d')
         request.POST = post_values
+        messages.success(request, 'Report added')
         return super(ReportCreate, self).post(request, *args, **kwargs)
     
-class AttendanceMonthView(MonthArchiveView):
+class AttendanceView(MonthArchiveView):
     model = Attendance
-    date_field = "date"
+    date_field = "meeting_date"
     allow_future = False
     make_object_list = True
+
+    def get(self, request, *args, **kwargs):
+        latest = Attendance.objects.latest('meeting_date').meeting_date
+        self.year = self.kwargs['year'] if self.kwargs.has_key('year') else latest.strftime('%Y')
+        self.month = self.kwargs['month'] if self.kwargs.has_key('month') else latest.strftime('%b')
+        return super(AttendanceView, self).get(request, *args, **kwargs)
+
+
+
+class AttendanceForm(ModelForm):
+    class Meta:
+        model = Attendance
+
+'''
+    def clean_meeting_date(self):
+        cleaned_data = super(AttendanceForm, self).clean()
+        pk = cleaned_data.get('pk')
+        meeting_date = cleaned_data.get('meeting_date')
+        if not pk:
+            print '   ... form.meeting_date: %s' % meeting_date 
+            exists = Attendance.objects.filter(meeting_date=meeting_date)
+            if exists:
+                print '   ... Attendance.objects.filter(meeting_date=form.meeting_date): %s' % exists
+                raise ValidationError(_("Already added a record for this meeting attendance."))
+            else: 
+                print '   ... Does not exists, should go save now!'
+        return cleaned_data          
+   
+    def form_invalid(self, form):
+        messages.info(
+            self.request,
+            "Your submission has not been saved. Try again."
+        )
+        return super(AttendanceForm, self).form_invalid(form)
+''' 
+
+class AttendanceCreateView(CreateView):
+    model = Attendance
+    form_class = AttendanceForm
+    success_url  = "/att/"
+
+    def post(self, request, *args, **kwargs):
+        messages.success(request, 'Attendance report added')
+        return super(AttendanceCreateView, self).post(request, *args, **kwargs)
+
+def initialize_month_attendance(**kwargs):    
+    latest = ServiceReport.objects.latest('month').month
+    year = self.kwargs['year'] if kwargs.has_key('year') else latest.strftime('%Y')
+    month = self.kwargs['month'] if kwargs.has_key('month') else latest.strftime('%b')
+    
+        
+
+def manage_attendance(request):
+    AttendanceFormset = formset_factory(AttendanceForm)
+    if request.method == 'POST':
+        formset = AttendanceFormset(request.POST)
+        if formset.is_valid():
+            pass
+    else:
+        initial = initialize_month_attendance()
+        formset = AttendanceFormset()
+        return render_to_response('cong/attendance_sheet.html', {'formset': formset})

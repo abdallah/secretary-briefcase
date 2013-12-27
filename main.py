@@ -11,7 +11,7 @@ import importlib
 PROJECT_DIR = os.path.dirname(__file__)
 try:
     settings = importlib.import_module('conf.settings')
-            DATABASe_FILE = settings.DATABASES['default']['NAME']
+    DATABASE_FILE = settings.DATABASES['default']['NAME']
 except:
     DATABASE_FILE = os.path.join(PROJECT_DIR, 'congregation.sqlite')
 

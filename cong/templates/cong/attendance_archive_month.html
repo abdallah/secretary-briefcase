@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<a class="list-group-item modallink" href="{% url 'attendance_add' %}"><i class="fa fa-users"></i> Add Attendance Report</a>
+{% for a in object_list %}
+{{ a.meeting_date }} - {{ a.number }}
+{% endfor %}
+<script>
+$(function() {
+    $('.navbar li').removeClass('active');
+    $('.navbar #page_attendance').addClass('active')
+});
+</script>
+{% endblock %}
+
