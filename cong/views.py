@@ -2,7 +2,7 @@ from django.utils.translation import ugettext as _
 from django.shortcuts import get_object_or_404, render, render_to_response
 from django.template import RequestContext
 from django.template.loader import render_to_string
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseBadRequest
 from django.core.urlresolvers import reverse
 from django.core import serializers
 from django.views import generic
@@ -16,7 +16,9 @@ from django.contrib import messages
 import json
 import logging
 from datetime import datetime
+from calendar import Calendar
 from cong.models import *
+from django.conf import settings
 
 
 def home(request, year=None, month=None):
@@ -85,6 +87,22 @@ class PublisherList(ListView):
             )
         else: 
             return Publisher.objects.all()
+
+class GroupsView(ListView):
+    model = Publisher 
+
+    def get_queryset(self):
+        return Publisher.objects.filter(congregation=settings.CONGREGATION).order_by('group', 'last_name')
+
+def update_group(request, publisher_id, group_id):
+    pub = get_object_or_404(Publisher, pk=publisher_id)
+    group = get_object_or_404(Group, pk=group_id)
+    pub.group = group
+    try: 
+        pub.save()
+        return HttpResponse('Saved')
+    except:
+        return HttpResponseBadRequest()
 
 class PublisherCreate(CreateView):
     model = Publisher
@@ -159,29 +177,6 @@ class AttendanceForm(ModelForm):
     class Meta:
         model = Attendance
 
-'''
-    def clean_meeting_date(self):
-        cleaned_data = super(AttendanceForm, self).clean()
-        pk = cleaned_data.get('pk')
-        meeting_date = cleaned_data.get('meeting_date')
-        if not pk:
-            print '   ... form.meeting_date: %s' % meeting_date 
-            exists = Attendance.objects.filter(meeting_date=meeting_date)
-            if exists:
-                print '   ... Attendance.objects.filter(meeting_date=form.meeting_date): %s' % exists
-                raise ValidationError(_("Already added a record for this meeting attendance."))
-            else: 
-                print '   ... Does not exists, should go save now!'
-        return cleaned_data          
-   
-    def form_invalid(self, form):
-        messages.info(
-            self.request,
-            "Your submission has not been saved. Try again."
-        )
-        return super(AttendanceForm, self).form_invalid(form)
-''' 
-
 class AttendanceCreateView(CreateView):
     model = Attendance
     form_class = AttendanceForm
@@ -192,19 +187,38 @@ class AttendanceCreateView(CreateView):
         return super(AttendanceCreateView, self).post(request, *args, **kwargs)
 
 def initialize_month_attendance(**kwargs):    
+    print 'initializing month_attendance'
     latest = ServiceReport.objects.latest('month').month
-    year = self.kwargs['year'] if kwargs.has_key('year') else latest.strftime('%Y')
-    month = self.kwargs['month'] if kwargs.has_key('month') else latest.strftime('%b')
-    
+    year = kwargs['year'] if kwargs.has_key('year') else latest.strftime('%Y')
+    month = kwargs['month'] if kwargs.has_key('month') else latest.strftime('%m')
+    initial = []
+    mwlist = []
+    welist = []
+    cal = Calendar()
+    for day in cal.itermonthdates(int(year),int(month)):
+        print 'day: %s' % day.isoformat()
+        meeting = None
+        if day.weekday()==settings.MEETING_MIDWEEK:
+            meeting = "MW"
+            mwlist.append({'meeting': meeting, 'meeting_date': day})
+        if day.weekday()==settings.MEETING_WEEKEND:
+            meeting = "WE"
+            welist.append({'meeting': meeting, 'meeting_date': day})
+        initial = mwlist + welist
+    return initial
         
 
-def manage_attendance(request):
+def manage_attendance(request, year=None, month=None):
+    print 'managing attendance'
     AttendanceFormset = formset_factory(AttendanceForm)
     if request.method == 'POST':
         formset = AttendanceFormset(request.POST)
         if formset.is_valid():
             pass
     else:
-        initial = initialize_month_attendance()
-        formset = AttendanceFormset()
-        return render_to_response('cong/attendance_sheet.html', {'formset': formset})
+        latest = ServiceReport.objects.latest('month').month
+        year = year if year else latest.strftime('%Y')
+        month = month if month else latest.strftime('%m')
+        initial = initialize_month_attendance(year=year, month=month)
+        formset = AttendanceFormset(initial=initial)
+        return render_to_response('cong/attendance_sheet.html', {'formset': formset, 'month':month})

@@ -33,6 +33,13 @@
                     <li><div id="dp3"></div></li>
                 </ul>
             </li>
+	    <li id="page_publishers" class="dropdown">
+	        <a data-target="#" href="#" class="dropdown-toggle" data-toggle="dropdown">Publishers <span class="caret"></span></a>
+	    	<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                    <li><a href="{% url 'publisher_groups' %}">Organize Groups</a></li>
+                    <li><a href="#">Publishers List</a></li>
+                </ul>
+            </li>
             <li id="page_attendance"><a href="{% url 'attendance_month' %}">Attendance</a></li>
             <li><a href="{% url 'admin:index' %}">Admin</a></li>
             <li><a href="{% url 'backup' %}">Backup</a></li>

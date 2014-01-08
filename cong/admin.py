@@ -1,5 +1,5 @@
 from django.contrib import admin
-from cong.models import Publisher, ServiceReport, Group, Attendance
+from cong.models import Publisher, ServiceReport, Group, Attendance, Congregation
 from django import forms
 from django.db import models
 
@@ -33,3 +33,4 @@ admin.site.register(Group)
 admin.site.register(Publisher, PubAdmin)
 admin.site.register(ServiceReport, SRAdmin)
 admin.site.register(Attendance)
+admin.site.register(Congregation)

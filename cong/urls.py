@@ -27,13 +27,16 @@ publisher_patterns = patterns('',
     url(r'^(?P<publisher_id>\d+)/$', 'cong.views.publisher_card', name='card'),
     url(r'^list/$', PublisherList.as_view(), name="publisher_list"),
     url(r'^add/$', PublisherCreate.as_view(), name="publisher_add"),
+    url(r'^groups/$', GroupsView.as_view(), name="publisher_groups"),
+    url(r'^(?P<publisher_id>\d+)/togroup/(?P<group_id>\d+)/$', 'cong.views.update_group', name='move_to_group'),
 )
 
 attendance_patterns = patterns('',
     url(r'^(?P<year>\d{4})/(?P<month>[-\w]+)/$',
            AttendanceView.as_view(), name="attendance_archive_month"), 
     url(r'^add/$', AttendanceCreateView.as_view(), name="attendance_add"),
-    url(r'^$', AttendanceView.as_view(), name="attendance_month")
+    #url(r'^$', AttendanceView.as_view(), name="attendance_month")
+    url(r'^$', manage_attendance, name="attendance_month"),
 )
     
 urlpatterns = patterns('',

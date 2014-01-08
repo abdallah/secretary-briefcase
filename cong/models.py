@@ -4,6 +4,7 @@ from django.db.models import Count, Sum
 from django.core import serializers
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
+from django.conf import settings
 
 def last_month(sdate=None):
     """
@@ -86,6 +87,9 @@ class Congregation(models.Model):
     name = models.CharField(max_length=50)
     number = models.IntegerField()
     
+    def __unicode__(self):
+        return u'%s (%s)' % (self.name, self.number)
+
 class Group(models.Model):
     name = models.CharField(max_length=50)
     overseer = models.ForeignKey('Publisher', 
@@ -110,6 +114,7 @@ class Publisher(models.Model):
     is_regular_pioneer = models.BooleanField(default=False)
     is_special_pioneer = models.BooleanField(default=False)
     group = models.ForeignKey('Group', blank=True, null=True)
+    congregation = models.ForeignKey('Congregation', blank=True, null=True)
 
     class Meta:
         ordering = ['last_name', 'first_name']

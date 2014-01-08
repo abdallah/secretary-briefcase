@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+{% regroup object_list by group as pubs %}
+<div class="row" id="groups">
+{% for g in pubs %}
+<div class="col-md-3">
+<div class="panel panel-default">
+	<div class="panel-heading"><div class="panel-title">{{g.grouper}}</div></div>
+	<div class="list-group" id="group-{{g.grouper.id}}">
+		{% for p in g.list %}
+		<a class="list-group-item" id="publisher-{{p.pk}}" href='{% url "card" p.pk %}' data-toggle="modal" data-target="#myModal"><i class="fa fa-folder-o"></i> {{ p.get_name }} </a>
+		{% endfor %}
+	</div>
+</div><!--/panel-->
+</div><!--/col-->
+{% endfor %}
+</div><!--/row-->
+<div id="changes"></div>
+<script src="{% static 'js/Sortable.min.js' %}"></script>
+<script>
+(function (){
+    var groups = document.getElementById("groups");
+    [].forEach.call(groups.getElementsByClassName('list-group'), function (el){
+	new Sortable(el, { group: 'group',
+	onAdd: function (evt){
+	     // $('#changes').append('added: '+ evt.item.text + ' to '+ evt.target.parentElement.id);
+	     var publisher_id = evt.item.id.replace('publisher-', '');
+	     var group_id = evt.target.parentElement.id.replace('group-', '');
+	     var url = '{% url "move_to_group" "999" "888" %}'.replace('999', publisher_id).replace('888', group_id);
+	     $.post(url, {csrfmiddlewaretoken: '{{ csrf_token }}'}, function(data){
+		console.log('post returned: '+data);
+	     }).fail(function(){
+		console.log('save failed');
+	     });
+	},
+        });
+    });
+
+})();
+</script>
+<script>
+$(function() {
+    $('.navbar li').removeClass('active');
+    $('.navbar #page_publishers').addClass('active')
+});
+</script>
+
+{% endblock %}

@@ -6,8 +6,13 @@ ADMINS = (
 )
 
 MANAGERS = ADMINS
+
+import calendar
+MEETING_MIDWEEK = calendar.WEDNESDAY
+MEETING_WEEKEND = calendar.SUNDAY
+CONGREGATION = 1
 DATABASES = {}
-USE_SQLITE = True
+USE_SQLITE = False
 sqlitedb = {
         'ENGINE': 'django.db.backends.sqlite3', 
         'NAME': 'congregation.sqlite'
@@ -21,15 +26,12 @@ mysqldb = {
 
 try:
     import androidhelper
-    print 'running in android'
     DATABASES['default'] = sqlitedb
 except:
-    print 'running on server'
     DATABASES['default'] = mysqldb
     if USE_SQLITE:
         DATABASES['default'] = sqlitedb
 
-print DATABASES['default']['ENGINE']        
 
 '''
 DATABASES = {

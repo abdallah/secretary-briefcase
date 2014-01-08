@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+.date {
+    width: 50px;
+}
+.date p {
+    font-size: 50px; 
+    text-align: center; 
+    color: #9e9e9e;
+    margin: 0px;
+}
+.date input {
+   width: 70px;
+}
+</style>
+<h2>{{ month|date:"F" }}</h2>
+<form method="post" action="{% url 'attendance_month' %}">
+    {{ formset.management_form }}
+    <table>
+	    <tr>
+        {% for form in formset %}
+	<form method="post" action="{% url 'attendance_month' %}">
+	{% csrf_token %}
+	{% if form.meeting.value %}
+	{% ifchanged form.meeting.value %}</tr><tr>{% endifchanged %}
+            <td class="date"><p>{{ form.meeting_date.value|date:"d" }}</p>
+		{{ form.number }}</td>
+	{% endif %}
+        </form>
+        {% endfor %}
+	    </tr>
+    </table>
+    <input type="submit" value="Save" class="submit" />
+</form>
+{% endblock %}
