@@ -153,6 +153,7 @@ class ReportCreate(CreateView):
     
     def post(self, request, *args, **kwargs):
         post_values = request.POST.copy()
+        print 'ReportCreate: post[month] = %s' % request.POST['month']
         d = datetime.strptime(request.POST['month'], '%Y/%m')
         post_values['month'] = datetime.strftime(d, '%Y-%m-%d')
         request.POST = post_values

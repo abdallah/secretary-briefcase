@@ -28,26 +28,27 @@
                     <div class="panel-heading"><h3>Did not report</h3></div>
                     <div class="list-group">
                         {% for pub in dnr %}
-                        {% ifchanged pub.group %}
-                            {% if not forloop.first %}</div>{% endif %}
-                            {% if pub.group %}
-                            <h4><a class="list-group-item" data-toggle="collapse" data-target="#group{{pub.group.id}}" href="#"> {{ pub.group }}<span class="badge"></span>	</a>
-			    </h4>
-                            <div id="group{{pub.group.id}}" class="collapse">
-                            {% else %}
-                            <h4><a class="list-group-item" data-toggle="collapse" data-target="#groupX" href="#">No Group<span class="badge"></span>	</a>
-			    </h4>
-                            <div id="groupX" class="collapse">
-                            {% endif %}
-                        {% endifchanged %}
-                        <a class="modallink list-group-item" 
+                        	{% ifchanged pub.group %}
+                            	{% if not forloop.first %}</div>{% endif %}
+                            	{% if pub.group %}
+                            		<h4><a class="list-group-item" data-toggle="collapse" data-target="#group{{pub.group.id}}" href="#"> {{ pub.group }}<span class="badge"></span>	</a></h4>
+                            		<div id="group{{pub.group.id}}" class="collapse">
+                            	{% else %}
+                            		<h4><a class="list-group-item" data-toggle="collapse" data-target="#groupX" href="#">No Group<span class="badge"></span>	</a></h4>
+                            		<div id="groupX" class="collapse">
+                            	{% endif %}
+                        	{% endifchanged %}
+                        	<a class="modallink list-group-item" 
                                href='{% url 'report_add' publisher=pub.pk %}' 
                                data-toggle="modal" data-target="#myModal">
-                             <i class="fa fa-plus-circle"></i> {{pub.get_name}}</a>
+                               <i class="fa fa-plus-circle"></i> {{pub.get_name}}</a>
+                             {% empty %}
+                         	 <div id="groupEmpty">
+                         		<a class="list-group-item" href="#">All Good!</a>    
                              {% endfor %} 
-                        </div>
-                    </div>
-                      </div></div>
+                        </div><!--/group|collapse-->
+                    </div><!--/list-group-->
+                </div></div><!--/col-sm-4/panel-->
                 <div class="col-sm-4"><div class="panel panel-success">
                     <div class="panel-heading"><h3>Auxiliary Pioneers</h3></div>
                     <div class="list-group">
@@ -55,8 +56,8 @@
                         <a class="list-group-item" href='{% url "card" ap.pk %}' data-toggle="modal" data-target="#myModal"><i class="fa fa-folder-o"></i> {{ ap.get_name }}</a>
                         {% endfor %}
                     </div>
-                </div></div>
-                </div> 
+            	</div></div>
+            </div> 
             <div class="row">
                 <table class="table table-hover">
                     <tr>
@@ -69,37 +70,37 @@
                     <th>Books</th>
                     <th>Booklets/Brochures</th>
                     </tr>
-		    <tr>
-		    <td>Publishers</td>
-		    <td>{{ pub_report.count }}</td>
-		    <td>{{ pub_report.hours }}</td>
-		    <td>{{ pub_report.magazines }}</td>
-		    <td>{{ pub_report.visits }}</td>
-		    <td>{{ pub_report.studies }}</td>
-		    <td>{{ pub_report.books }}</td>
-		    <td>{{ pub_report.booklets_brochures }}</td>
-		    </tr>
-		    <tr>
-		    <td>Auxiliary Pioneers</td>
-		    <td>{{ aux_report.count }}</td>
-		    <td>{{ aux_report.hours }}</td>
-		    <td>{{ aux_report.magazines }}</td>
-		    <td>{{ aux_report.visits }}</td>
-		    <td>{{ aux_report.studies }}</td>
-		    <td>{{ aux_report.books }}</td>
-		    <td>{{ aux_report.booklets_brochures }}</td>
-		    </tr>
-		    <tr>
-		    <td>Regular Pioneers</td>
-		    <td>{{ reg_report.count }}</td>
-		    <td>{{ reg_report.hours }}</td>
-		    <td>{{ reg_report.magazines }}</td>
-		    <td>{{ reg_report.visits }}</td>
-		    <td>{{ reg_report.studies }}</td>
-		    <td>{{ reg_report.books }}</td>
-		    <td>{{ reg_report.booklets_brochures }}</td>
-		    </tr>
-		</table>
+				    <tr>
+				    <td>Publishers</td>
+				    <td>{{ pub_report.count }}</td>
+				    <td>{{ pub_report.hours }}</td>
+				    <td>{{ pub_report.magazines }}</td>
+				    <td>{{ pub_report.visits }}</td>
+				    <td>{{ pub_report.studies }}</td>
+				    <td>{{ pub_report.books }}</td>
+				    <td>{{ pub_report.booklets_brochures }}</td>
+				    </tr>
+				    <tr>
+				    <td>Auxiliary Pioneers</td>
+				    <td>{{ aux_report.count }}</td>
+				    <td>{{ aux_report.hours }}</td>
+				    <td>{{ aux_report.magazines }}</td>
+				    <td>{{ aux_report.visits }}</td>
+				    <td>{{ aux_report.studies }}</td>
+				    <td>{{ aux_report.books }}</td>
+				    <td>{{ aux_report.booklets_brochures }}</td>
+				    </tr>
+				    <tr>
+				    <td>Regular Pioneers</td>
+				    <td>{{ reg_report.count }}</td>
+				    <td>{{ reg_report.hours }}</td>
+				    <td>{{ reg_report.magazines }}</td>
+				    <td>{{ reg_report.visits }}</td>
+				    <td>{{ reg_report.studies }}</td>
+				    <td>{{ reg_report.books }}</td>
+				    <td>{{ reg_report.booklets_brochures }}</td>
+				    </tr>
+				</table>
             </div><!--/row-->
         </div><!--/panel-body-->
     </div><!--/panel-->
