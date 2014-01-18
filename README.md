@@ -1,4 +1,8 @@
 secretary-briefcase
 ===================
 
-congregation tools
+congregation tools featuring:
+- publishers information card
+- monthly reports
+- meeting attendance
+- group organization
